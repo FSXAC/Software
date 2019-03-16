@@ -41,6 +41,16 @@ void worldUpdateCallback(const thunderbots_msgs::World::ConstPtr &msg)
     primitive_publisher.publish(primitive_array_message);
 
     // On every tick, send the layer messages
+    Field& field = world.field();
+    const uint field_total_width  = static_cast<uint>(field.totalWidth() * 1000);
+    const uint field_total_length = static_cast<uint>(field.totalLength() * 1000);
+    const uint field_width        = static_cast<uint>(field.width() * 1000);
+    const uint field_length       = static_cast<uint>(field.length() * 1000);
+
+    auto vm = Util::VisualizerMessenger::getInstance();
+    Util::VisualizerMessenger::ShapeStyle style;
+    vm->drawRect(0, 0, 0, field_total_length, field_total_length, 0, style);
+    vm->drawRect(0, 0, 0, field_length, field_width, 0, style);
     Util::VisualizerMessenger::getInstance()->publishAndClearLayers();
 }
 
