@@ -41,7 +41,7 @@ void worldUpdateCallback(const thunderbots_msgs::World::ConstPtr &msg)
     primitive_publisher.publish(primitive_array_message);
 
     // On every tick, send the layer messages
-    Field& field = world.field();
+    Field &field                  = world.field();
     const uint field_total_width  = static_cast<uint>(field.totalWidth() * 1000);
     const uint field_total_length = static_cast<uint>(field.totalLength() * 1000);
     const uint field_width        = static_cast<uint>(field.width() * 1000);
