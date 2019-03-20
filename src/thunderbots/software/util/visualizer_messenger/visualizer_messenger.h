@@ -16,9 +16,9 @@
 #include <chrono>
 #include <map>
 #include <memory>
-#include <mutex>
+// #include <mutex>
 #include <string>
-#include <thread>
+// #include <thread>
 #include <vector>
 
 #include "geom/point.h"
@@ -141,16 +141,23 @@ namespace Util
         explicit VisualizerMessenger()
             : layer_shapes_map(),
               time_last_published(),
-              websocket_thread(),
-              websocket_mutex(),
+              //   websocket_thread(),
+              //   websocket_mutex(),
               websocket_connections()
         {
         }
 
+        // ~VisualizerMessenger() {
+        // }
         /**
          * Handles any connections
          */
-        void receiveWebsocketConnections();
+        // void receiveWebsocketConnections();
+
+        void startAsync();
+        void stopAsync();
+        void startAccept();
+        void handleAccept(tcp::socket& socket);
 
         /**
          * Sends a layer of shape data through websocket
@@ -190,11 +197,15 @@ namespace Util
         // Time point
         time_point time_last_published;
 
-        // Thread on which we watch for websocket connections
-        std::thread websocket_thread;
+        // Acceptor
+        std::shared_ptr<tcp::acceptor> tcp_acceptor;
 
-        // Mutex on the list of current websocket connections
-        std::mutex websocket_mutex;
+        // IO service
+        std::shared_ptr<boost::asio::io_service> io_service;
+
+        // Endpoint
+        std::shared_ptr<boost::asio::ip::basic_endpoint<boost::asio::ip::tcp>>
+            websocket_endpoint;
 
         // All the current websocket connections we have
         websocket_connection_vector websocket_connections;

@@ -20,59 +20,121 @@ namespace Util
         return vm;
     }
 
-    void VisualizerMessenger::receiveWebsocketConnections()
-    {
-        // The io_context is required for all I/O
-        boost::asio::io_service ioc{1};
+    // void VisualizerMessenger::receiveWebsocketConnections()
+    // {
+    //     // The io_context is required for all I/O
+    //     boost::asio::io_service ioc{1};
 
-        // The acceptor receives incoming connections
+    //     // The acceptor receives incoming connections
+    //     auto const address = boost::asio::ip::address::from_string(
+    //         Util::Constants::VISUALIZER_WEBSOCKET_ADDRESS);
+    //     auto const port =
+    //         static_cast<unsigned short>(Util::Constants::VISUALIZER_WEBSOCKET_PORT);
+    //     tcp::acceptor acceptor{ioc, {address, port}};
+    //     for (;;)
+    //     {
+    //         // This will receive the new connection
+    //         tcp::socket socket{ioc};
+
+    //         // Block until we get a connection
+    //         acceptor.accept(socket);
+
+    //         // Move the connection to a websocket stream
+    //         websocket::stream<tcp::socket> websocket(std::move(socket));
+
+    //         // Accept the websocket handshake
+    //         websocket.accept();
+
+    //         // Set the websocket to talk in binary
+    //         websocket.binary(true);
+
+    //         LOG(INFO) << "Visualizer websocket connection received." << std::endl;
+
+    //         // Lock the current list of sockets
+    //         // websocket_mutex.lock();
+
+    //         // Save this new websocket connection
+    //         websocket_connections.emplace_back(std::move(websocket));
+
+    //         // Unlock the current list of sockets
+    //         // websocket_mutex.unlock();
+
+    //         LOG(INFO) << "Visualizer websocket connection added." << std::endl;
+    //     }
+    // }
+
+    void VisualizerMessenger::startAsync()
+    {
+        // boost::asio::io_service ioc{1};
+
         auto const address = boost::asio::ip::address::from_string(
             Util::Constants::VISUALIZER_WEBSOCKET_ADDRESS);
         auto const port =
             static_cast<unsigned short>(Util::Constants::VISUALIZER_WEBSOCKET_PORT);
-        tcp::acceptor acceptor{ioc, {address, port}};
-        for (;;)
-        {
-            // This will receive the new connection
-            tcp::socket socket{ioc};
 
-            // Block until we get a connection
-            acceptor.accept(socket);
+        this->websocket_endpoint =
+            std::shared_ptr<boost::asio::ip::basic_endpoint<boost::asio::ip::tcp>>(
+                new boost::asio::ip::basic_endpoint<boost::asio::ip::tcp>(address, port));
 
-            // Move the connection to a websocket stream
-            websocket::stream<tcp::socket> websocket(std::move(socket));
-
-            // Accept the websocket handshake
-            websocket.accept();
-
-            // Set the websocket to talk in binary
-            websocket.binary(true);
-
-            LOG(INFO) << "Visualizer websocket connection received." << std::endl;
-
-            // Lock the current list of sockets
-            websocket_mutex.lock();
-
-            // Save this new websocket connection
-            websocket_connections.emplace_back(std::move(websocket));
-
-            // Unlock the current list of sockets
-            websocket_mutex.unlock();
-
-            LOG(INFO) << "Visualizer websocket connection added." << std::endl;
-        }
+        this->io_service =
+            std::shared_ptr<boost::asio::io_service>(new boost::asio::io_service(1));
+        this->tcp_acceptor = std::shared_ptr<tcp::acceptor>(
+            new tcp::acceptor(*io_service, *websocket_endpoint));
     }
+
+    void VisualizerMessenger::stopAsync()
+    {
+        this->tcp_acceptor->cancel();
+    }
+
+    void VisualizerMessenger::startAccept()
+    {
+        // This would be the conent of the old func
+        std::shared_ptr<tcp::socket> socket(new tcp::socket(*this->io_service));
+        this->tcp_acceptor->async_accept(
+            *socket, std::bind(&VisualizerMessenger::handleAccept, this, *socket));
+    }
+
+    void VisualizerMessenger::handleAccept(tcp::socket& socket)
+    {
+        websocket::stream<tcp::socket> websocket(std::move(socket));
+
+        // Accept the websocket handshake
+        websocket.accept();
+
+        // Set the websocket to talk in binary
+        websocket.binary(true);
+
+        LOG(INFO) << "Visualizer websocket connection received." << std::endl;
+
+        // Save this new websocket connection
+        websocket_connections.emplace_back(std::move(websocket));
+
+        LOG(INFO) << "Visualizer websocket connection added." << std::endl;
+        this->startAccept();
+    }
+
+
+    // void receive...
+    // this is the start function
+    //
+    //  create ioservice ioc
+    //  creates acceptor with ip and port
+    //
+    //  for (;;)
+    //      create socket from ioc
+    //      acceptor.accept
 
     void VisualizerMessenger::initializeWebsocket()
     {
-        websocket_thread =
-            std::thread([this]() { return receiveWebsocketConnections(); });
+        // websocket_thread =
+        //     std::thread([this]() { return receiveWebsocketConnections(); });
     }
 
     void VisualizerMessenger::publishAndClearLayers()
     {
         // Take ownership of list of websockets for the duration of this function
-        std::lock_guard<std::mutex> websocket_list_lock(websocket_mutex);
+        // std::lock_guard<std::mutex> websocket_list_lock(websocket_mutex);
 
         // Limit rate of the message publishing
         // Get the time right now
