@@ -291,15 +291,13 @@ namespace Util
 
     void VisualizerMessenger::addShapeToLayer(uint8_t layer, Shape& shape)
     {
-        if (this->layer_shapes_map.find(layer) != this->layer_shapes_map.end())
+        if (this->layer_shapes_map.find(layer) == this->layer_shapes_map.end())
         {
-            this->layer_shapes_map[layer].emplace_back(shape);
+            // Initialize new key to empty vector pair
+            this->layer_shapes_map[layer];
         }
-        else
-        {
-            LOG(WARNING) << "Referenced layer (" << layer << ") is undefined."
-                         << std::endl;
-        }
+
+        this->layer_shapes_map[layer].emplace_back(shape);
     }
 
 }  // namespace Util
