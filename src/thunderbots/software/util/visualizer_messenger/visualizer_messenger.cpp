@@ -1,6 +1,5 @@
 #include "visualizer_messenger.h"
 
-
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
 
@@ -91,7 +90,8 @@ namespace Util
         // This would be the conent of the old func
         std::shared_ptr<tcp::socket> socket(new tcp::socket(*this->io_service));
         this->tcp_acceptor->async_accept(
-            *socket, std::bind(&VisualizerMessenger::handleAccept, this, boost::ref(*socket)));
+            *socket,
+            std::bind(&VisualizerMessenger::handleAccept, this, boost::ref(*socket)));
     }
 
     void VisualizerMessenger::handleAccept(tcp::socket& socket)
@@ -128,6 +128,8 @@ namespace Util
     {
         // websocket_thread =
         //     std::thread([this]() { return receiveWebsocketConnections(); });
+
+        // Start async
     }
 
     void VisualizerMessenger::publishAndClearLayers()
