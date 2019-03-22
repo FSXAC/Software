@@ -1,7 +1,6 @@
 #include "visualizer_messenger.h"
 
-#include <boost/asio/io_service.hpp>
-#include <boost/asio/ip/tcp.hpp>
+
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
 
@@ -92,7 +91,7 @@ namespace Util
         // This would be the conent of the old func
         std::shared_ptr<tcp::socket> socket(new tcp::socket(*this->io_service));
         this->tcp_acceptor->async_accept(
-            *socket, std::bind(&VisualizerMessenger::handleAccept, this, *socket));
+            *socket, std::bind(&VisualizerMessenger::handleAccept, this, boost::ref(*socket)));
     }
 
     void VisualizerMessenger::handleAccept(tcp::socket& socket)

@@ -157,7 +157,7 @@ namespace Util
         void startAsync();
         void stopAsync();
         void startAccept();
-        void handleAccept(tcp::socket& socket);
+        void handleAccept(boost::asio::ip::tcp::socket& socket);
 
         /**
          * Sends a layer of shape data through websocket
@@ -198,7 +198,7 @@ namespace Util
         time_point time_last_published;
 
         // Acceptor
-        std::shared_ptr<tcp::acceptor> tcp_acceptor;
+        std::shared_ptr<boost::asio::ip::tcp::acceptor> tcp_acceptor;
 
         // IO service
         std::shared_ptr<boost::asio::io_service> io_service;
