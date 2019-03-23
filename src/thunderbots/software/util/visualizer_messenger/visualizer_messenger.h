@@ -40,6 +40,12 @@ namespace Util
     class VisualizerMessenger
     {
        public:
+
+        ~VisualizerMessenger()
+        {
+            this->stopAsync();
+        }
+
         /**
          * ShapeStyle is a struct that packs the appearance properties that goes into a
          * shape message The default constructor contains the default value of the draw
@@ -141,18 +147,9 @@ namespace Util
         explicit VisualizerMessenger()
             : layer_shapes_map(),
               time_last_published(),
-              //   websocket_thread(),
-              //   websocket_mutex(),
               websocket_connections()
         {
         }
-
-        // ~VisualizerMessenger() {
-        // }
-        /**
-         * Handles any connections
-         */
-        // void receiveWebsocketConnections();
 
         void startAsync();
         void stopAsync();
