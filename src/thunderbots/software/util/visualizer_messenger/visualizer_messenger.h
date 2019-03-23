@@ -40,7 +40,6 @@ namespace Util
     class VisualizerMessenger
     {
        public:
-
         ~VisualizerMessenger()
         {
             this->stopAsync();
@@ -145,9 +144,7 @@ namespace Util
          * Constructor; initializes an empty layers map then populates it
          */
         explicit VisualizerMessenger()
-            : layer_shapes_map(),
-              time_last_published(),
-              websocket_connections()
+            : layer_shapes_map(), time_last_published(), websocket_connections()
         {
         }
 
