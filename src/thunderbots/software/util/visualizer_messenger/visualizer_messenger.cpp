@@ -20,8 +20,6 @@ namespace Util
 
     void VisualizerMessenger::startAsync()
     {
-        // boost::asio::io_service ioc{1};
-
         auto const address = boost::asio::ip::address::from_string(
             Util::Constants::VISUALIZER_WEBSOCKET_ADDRESS);
         auto const port =
@@ -45,11 +43,13 @@ namespace Util
 
     void VisualizerMessenger::startAccept()
     {
-        // This would be the conent of the old func
-        std::shared_ptr<tcp::socket> socket(new tcp::socket(*this->io_service));
-        this->tcp_acceptor->async_accept(
-            *socket,
-            std::bind(&VisualizerMessenger::handleAccept, this, boost::ref(*socket)));
+        if (this->tcp_acceptor && this->io_service)
+        {
+            std::shared_ptr<tcp::socket> socket(new tcp::socket(*this->io_service));
+            this->tcp_acceptor->async_accept(
+                *socket,
+                std::bind(&VisualizerMessenger::handleAccept, this, boost::ref(*socket)));
+        }
     }
 
     void VisualizerMessenger::handleAccept(tcp::socket& socket)
@@ -73,7 +73,7 @@ namespace Util
 
     void VisualizerMessenger::initializeWebsocket()
     {
-        this->startAccept();
+        this->startAsync();
     }
 
     void VisualizerMessenger::publishAndClearLayers()
