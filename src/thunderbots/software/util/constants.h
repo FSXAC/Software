@@ -43,7 +43,7 @@ namespace Util
         static const unsigned int NUMBER_OF_SSL_VISION_CAMERAS = 4;
 
         // Visualizer messenger message publishing frequency
-        static const unsigned int DESIRED_VISUALIZER_MESSAGE_FREQ = 60;
+        static const unsigned int DESIRED_VISUALIZER_MESSAGE_FREQ = 1;
 
         // How many milliseconds a robot must not be seen in vision before it is
         // considered as "gone" and no longer reported.
@@ -51,6 +51,6 @@ namespace Util
 
         // Visualizer websocket IP and port
         static const std::string VISUALIZER_WEBSOCKET_ADDRESS = "127.0.0.1";
-        static const unsigned int VISUALIZER_WEBSOCKET_PORT   = 9091;
+        static const std::string VISUALIZER_WEBSOCKET_PORT    = "9091";
     }  // namespace Constants
 }  // namespace Util

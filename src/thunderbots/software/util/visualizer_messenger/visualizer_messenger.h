@@ -9,6 +9,7 @@
 
 #include <ros/ros.h>
 
+#include <boost/asio.hpp>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core.hpp>
@@ -34,8 +35,8 @@ namespace ros
 namespace Util
 {
     using time_point = std::chrono::time_point<std::chrono::system_clock>;
-    using websocket_connection_vector =
-        std::vector<boost::beast::websocket::stream<boost::asio::ip::tcp::socket>>;
+    using websocket_connection_vector = std::vector<
+        std::shared_ptr<boost::beast::websocket::stream<boost::asio::ip::tcp::socket&>>>;
 
     class VisualizerMessenger
     {
